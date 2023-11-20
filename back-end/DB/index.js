@@ -386,15 +386,24 @@ city.hasMany(person,{
     sourceKey:"id",
 });
 
-state.belongsTo(city,{
+state.hasMany(city,{
     foreignKey: "state_id",
-    targetKey:"id",
-})
+});
 
-city.hasMany(state,{
+city.belongsTo(state,{
     foreignKey:'state_id',
-    sourceKey:"id",
-})
+});
+
+previous_history.belongsTo(patient,{
+        foreignKey:'patient_id',
+
+});
+
+
+previous_history.belongsTo(antecedent_type,{
+    foreignKey:'antecedent_type',
+
+});
 
 
 
