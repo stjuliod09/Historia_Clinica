@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 5000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -22,6 +22,8 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",
+    "eslint": "8.53.0",
+    "eslint-config-next": "14.0.2",
     "postcss": "^8",
     "tailwindcss": "^3.3.0"
   }

@@ -1,0 +1,11 @@
+.nyc_output
+node_modules/
+jspm_packages/
+.npm
+.env
+./data
+data
+*/data/
+./docker
+docker
+*/docker/
