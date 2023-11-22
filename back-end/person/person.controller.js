@@ -19,6 +19,11 @@ async function getId(req, res, next) {
 async function getAll(req, res, next) {
     const respuesta = await personService.getAll();
     return res.status(respuesta.status).json(respuesta);
+}
+
+  async function createPreviousHistory(req, res, next) {
+    const respuesta = await personService.createPreviousHistory(req.body);
+    return res.status(respuesta.status).json(respuesta);
   }
 
 module.exports = {
@@ -26,4 +31,5 @@ module.exports = {
     create,
     getAll,
     getId,
+    createPreviousHistory
   };

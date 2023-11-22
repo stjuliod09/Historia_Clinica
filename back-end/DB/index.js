@@ -20,7 +20,8 @@ const city = sequelize.define("city",{
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true, 
+        allowNull: true,
       },
     name:{
         type: DataTypes.STRING,
@@ -28,7 +29,6 @@ const city = sequelize.define("city",{
     },
     code:{
         type : DataTypes.STRING,
-        allowNull: false,
     },
     state_id:{
         type: DataTypes.INTEGER,
@@ -36,6 +36,7 @@ const city = sequelize.define("city",{
     }
 }, {
     tableName: 'city', 
+    timestamps: false,
   })
 
 const state = sequelize.define("state", {
@@ -50,15 +51,14 @@ const state = sequelize.define("state", {
     },
     code:{
         type : DataTypes.STRING,
-        allowNull: false,
     },
     country_id:{
         type: DataTypes.INTEGER,
-        allowNull:false
     }
 }, {
     tableName: 'state',
-  })
+    timestamps: false,
+    })
 
 const person = sequelize.define('person', {
     id: {
@@ -92,16 +92,6 @@ const person = sequelize.define('person', {
     type: DataTypes.INTEGER,  
     allowNull: false
   },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-  },
 }, {
   tableName: 'person',
   underscored: true, 
@@ -115,21 +105,12 @@ const patient = sequelize.define('patient', {
       },
   person_id: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
     allowNull: false
   },
   is_active: {
     type: DataTypes.INTEGER,
     allowNull: false,
-  },
- created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
   },
 }, {
   tableName: 'patient',
@@ -157,23 +138,13 @@ const previous_history = sequelize.define('previous_history', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  approximated_date_of_ocurrence: {
+  approximated_date_of_occurrence: {
     type: DataTypes.DATE,
     allowNull: false
   },
   value:{
     type: DataTypes.STRING,
     allowNull: false
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
   },
 }, {
   tableName: 'previous_history',
@@ -194,7 +165,11 @@ const antecedent_type = sequelize.define("antecedent_type",{
         type : DataTypes.STRING,
         allowNull: false,
     },
-})
+}, {
+  tableName: "antecedent_type",
+  timestamps: false,
+}
+)
 
 const previous_history_follow_up = sequelize.define('previous_history_follow_up', {
     id: {
@@ -212,16 +187,6 @@ const previous_history_follow_up = sequelize.define('previous_history_follow_up'
   obs: {
     type: DataTypes.STRING,
     allowNull: false
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
   },
 }, {
   tableName: 'previous_history_follow_up',
@@ -245,16 +210,6 @@ const person_identifier = sequelize.define('person_identifier', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-  },
 }, {
   tableName: 'person_identifier',
   underscored: true, 
@@ -276,7 +231,7 @@ const identifier_type = sequelize.define("identifier_type",{
     },
 }, {
     tableName: 'identifier_type',
-    underscored: true, 
+    timestamps: false,
   })
 
 const contact = sequelize.define('contact', {
@@ -304,16 +259,6 @@ const contact = sequelize.define('contact', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-  },
 }, {
   tableName: 'contact',
   underscored: true, // Mueve underscored aquí, dentro del mismo objeto
@@ -336,16 +281,6 @@ const address = sequelize.define('address', {
   city_id: {
     type: DataTypes.INTEGER,
     allowNull: false
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
   },
 }, {
   tableName: 'address',
@@ -371,11 +306,13 @@ const users = sequelize.define("users",{
         allowNull:false
     }
 }, {
-    tableName: 'users', 
+    tableName: 'users',
+    timestamps: false,
   })
 
 
 // ---------------- RELACIONES ENTRE TABLAS ----------------
+
 person.belongsTo(city, {
     foreignKey: 'city_of_birth', // Esta es la clave externa en la tabla Person
     targetKey: 'id', // La clave a la que se hace referencia en la tabla City
@@ -394,18 +331,82 @@ city.belongsTo(state,{
     foreignKey:'state_id',
 });
 
-previous_history.belongsTo(patient,{
-        foreignKey:'patient_id',
+patient.belongsTo(person,{
+  foreignKey: "person_id",
+})
 
+person.hasOne(patient,{
+  foreignKey: "person_id",
+})
+
+previous_history.belongsTo(patient, {
+    foreignKey: 'patient_id', // Esta es la columna de `previous_history`
 });
+
+// Definición en el modelo `patient`
+patient.hasOne(previous_history, {
+    foreignKey: 'patient_id', // Esta es la columna de `previous_history`
+});
+
 
 
 previous_history.belongsTo(antecedent_type,{
-    foreignKey:'antecedent_type',
-
+  foreignKey:'antecedent_type',
+  as: 'AntecedentTypeInfo'
 });
 
+antecedent_type.hasOne(previous_history,{
+  foreignKey:'antecedent_type',
+})
 
+
+previous_history_follow_up.belongsTo(previous_history,{
+  foreignKey:'previous_history_id'
+})
+
+previous_history.hasOne(previous_history_follow_up,{
+  foreignKey:'previous_history_id'
+})
+
+address.belongsTo(person,{
+  foreignKey: 'person_id'
+})
+
+person.hasOne(address,{
+  foreignKey: 'person_id'
+})
+
+address.belongsTo(city,{
+  foreignKey: 'city_id'
+})
+
+city.hasOne(address,{
+  foreignKey: 'city_id'
+})
+
+contact.belongsTo(person,{
+  foreignKey: 'person_id'
+})
+
+person.hasOne(contact,{
+  foreignKey: 'person_id'
+})
+
+person_identifier.belongsTo(person,{
+  foreignKey: 'person_id'
+})
+
+person.hasOne(person_identifier,{
+  foreignKey: 'person_id'
+})
+
+person_identifier.belongsTo(identifier_type,{
+  foreignKey: 'identifier_type_id'
+})
+
+identifier_type.hasOne(person_identifier,{
+  foreignKey: 'identifier_type_id'
+})
 
 module.exports = {
     person,
