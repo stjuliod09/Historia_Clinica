@@ -77,15 +77,13 @@ const person = sequelize.define(
       autoIncrement: true
     },
     first_name: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING
     },
     second_name: {
       type: DataTypes.STRING
     },
     first_last_name: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING
     },
     second_last_name: {
       type: DataTypes.STRING

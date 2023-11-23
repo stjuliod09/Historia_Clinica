@@ -49,6 +49,12 @@ async function createPreviousHFU(req, res, next) {
   const respuesta = await personService.createPreviousHFU(req.body);
   return res.status(respuesta.status).json(respuesta);
 }
+
+async function getUserById(req, res, next) {
+  const respuesta = await personService.getUserById(req.params);
+  return res.status(respuesta.status).json(respuesta);
+}
+
 module.exports = {
   update,
   create,
@@ -59,5 +65,6 @@ module.exports = {
   createContact,
   createPersonIdentifier,
   createUser,
-  createPreviousHFU
+  createPreviousHFU,
+  getUserById
 };

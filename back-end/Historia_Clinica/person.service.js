@@ -28,9 +28,7 @@ async function create(req) {
     let existingState, existingCity;
 
     // Verificar y crear el estado si no se proporciona el ID
-    if (!req.city_of_birth.state.id) {
-      // En caso de que no se proporcione el ID del estado,
-      // intenta buscarlo o crearlo en base a los otros datos
+    if (req.city_of_birth && !req.city_of_birth.state.id) {
       const [newState, createdState] = await state.findOrCreate({
         where: {
           name: req.city_of_birth.state.name,
@@ -39,14 +37,12 @@ async function create(req) {
         }
       });
       existingState = newState;
-    } else {
-      // Si se proporciona el ID del estado, busca el estado existente
+    } else if (req.city_of_birth && req.city_of_birth.state.id) {
       existingState = await state.findByPk(req.city_of_birth.state.id);
     }
 
     // Verificar y crear la ciudad según la existencia del ID o el nombre
-    if (!req.city_of_birth.id) {
-      // Si no se proporciona el ID de la ciudad, busca o crea una nueva ciudad por el nombre
+    if (req.city_of_birth && !req.city_of_birth.id) {
       const [newCity, createdCity] = await city.findOrCreate({
         where: {
           name: req.city_of_birth.name,
@@ -55,17 +51,18 @@ async function create(req) {
         }
       });
       existingCity = newCity;
-    } else {
-      // Si se proporciona el ID de la ciudad, busca la ciudad existente
+    } else if (req.city_of_birth && req.city_of_birth.id) {
       existingCity = await city.findByPk(req.city_of_birth.id);
     }
 
-    // Crea la nueva persona con las referencias a la ciudad y el estado
-    const newPerson = await person.create({
+    // Crea la nueva persona sin referencia a la ciudad si no se proporciona
+    const personData = {
       ...req,
-      city_of_birth: existingCity.id,
-      state_id: existingState.id
-    });
+      ...(req.city_of_birth && { city_of_birth: existingCity.id }),
+      ...(req.city_of_birth && { state_id: existingState.id })
+    };
+
+    const newPerson = await person.create(personData);
 
     const newPatient = await patient.create({
       person_id: newPerson.id,
@@ -249,6 +246,22 @@ async function createPreviousHFU(req) {
   return { status: 200, mensaje: 'The previous history follow up has been created', newPrevHUF };
 }
 
+async function getUserById(userId) {
+  try {
+    console.log(userId);
+    const user = await users.findOne({ where: { id: userId.id } });
+
+    if (user) {
+      return { status: 200, mensaje: 'User found', user };
+    } else {
+      return { status: 404, mensaje: 'User not found' };
+    }
+  } catch (error) {
+    // Manejo de errores si la búsqueda falla
+    return { status: 500, mensaje: 'Error fetching user', error };
+  }
+}
+
 module.exports = {
   create,
   getAll,
@@ -259,5 +272,6 @@ module.exports = {
   createContact,
   createPersonIdentifier,
   createUser,
-  createPreviousHFU
+  createPreviousHFU,
+  getUserById
 };
