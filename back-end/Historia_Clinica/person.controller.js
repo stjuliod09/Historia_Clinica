@@ -41,6 +41,14 @@ async function createPersonIdentifier(req, res, next) {
   return res.status(respuesta.status).json(respuesta);
 }
 
+async function createUser(req, res, next) {
+  const respuesta = await personService.createUser(req.body);
+  return res.status(respuesta.status).json(respuesta);
+}
+async function createPreviousHFU(req, res, next) {
+  const respuesta = await personService.createPreviousHFU(req.body);
+  return res.status(respuesta.status).json(respuesta);
+}
 module.exports = {
   update,
   create,
@@ -49,5 +57,7 @@ module.exports = {
   createPreviousHistory,
   createAddress,
   createContact,
-  createPersonIdentifier
+  createPersonIdentifier,
+  createUser,
+  createPreviousHFU
 };

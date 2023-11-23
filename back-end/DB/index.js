@@ -211,6 +211,10 @@ const previous_history_follow_up = sequelize.define(
     obs: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    created_by: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1
     }
   },
   {

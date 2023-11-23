@@ -10,7 +10,7 @@ router.post('/previoushistory/create', personController.createPreviousHistory);
 router.post('/address/create', personController.createAddress);
 router.post('/contact/create', personController.createContact);
 router.post('/personid/create', personController.createPersonIdentifier);
-router.post('/idtype/create', personController.createContact);
-router.post('/users/create', personController.createContact);
+router.post('/users/create', personController.createUser);
+router.post('/previoushfu/create', personController.createPreviousHFU);
 
 module.exports = router;

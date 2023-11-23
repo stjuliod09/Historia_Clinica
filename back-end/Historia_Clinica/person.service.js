@@ -239,6 +239,16 @@ async function createIdType(req) {
   return { status: 200, mensaje: 'The identifier type has been created', newIdentifier };
 }
 
+async function createUser(req) {
+  const newUser = await users.create(req);
+  return { status: 200, mensaje: 'The user has been created', newUser };
+}
+
+async function createPreviousHFU(req) {
+  const newPrevHUF = await previous_history_follow_up.create(req);
+  return { status: 200, mensaje: 'The previous history follow up has been created', newPrevHUF };
+}
+
 module.exports = {
   create,
   getAll,
@@ -247,5 +257,7 @@ module.exports = {
   createPreviousHistory,
   createAddress,
   createContact,
-  createPersonIdentifier
+  createPersonIdentifier,
+  createUser,
+  createPreviousHFU
 };
