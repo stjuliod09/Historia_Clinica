@@ -15,6 +15,7 @@ const UserService = {
         redirect: 'follow'
       };
       const response = await fetch(url, requestOptions);
+      console.log(response);
       const data = await response.json();
       return data;
     } catch (e) {
@@ -43,16 +44,18 @@ const UserService = {
   },
   create: async function (raw) {
     try {
-      const url = APIURL;
+      const url = APIURL + 'create';
 
       const requestOptions = {
         method: 'POST',
-        body: raw,
+        body: JSON.stringify(raw),
         headers: cabezeraSinToken,
         redirect: 'follow'
       };
       const response = await fetch(url, requestOptions);
+      console.log(response);
       const data = await response.json();
+      console.log(data);
       return data;
     } catch (e) {
       console.log(e);
@@ -76,7 +79,7 @@ const UserService = {
   },
   getUserById: async function (id) {
     try {
-      const url = APIURL + `/getUserById/${id}`;
+      const url = APIURL + `getUserById/${id}`;
       console.log(url);
 
       const requestOptions = {
@@ -88,6 +91,26 @@ const UserService = {
 
       const data = await response.json();
 
+      console.log(data);
+
+      return data;
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  contactCreate: async function (raw) {
+    try {
+      console.log(raw);
+      const url = APIURL + 'contact/create';
+      const requestOptions = {
+        method: 'POST',
+        body: JSON.stringify(raw),
+        headers: cabezeraSinToken,
+        redirect: 'follow'
+      };
+      const response = await fetch(url, requestOptions);
+      console.log(response);
+      const data = await response.json();
       return data;
     } catch (e) {
       console.log(e);

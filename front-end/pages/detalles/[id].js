@@ -79,12 +79,12 @@ export default function PatientInfo() {
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="body1">
-                      <strong>Dirección:</strong> {direccion}
+                      <strong>Dirección:</strong> {account.address}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="body1">
-                      <strong>Etnia:</strong> {etnia}
+                      <strong>Etnia:</strong> {account.etnia}
                     </Typography>
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -99,12 +99,12 @@ export default function PatientInfo() {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Typography variant="body1">
-                      <strong>Estado:</strong> {account.city.state.name}
+                      <strong>Estado:</strong> {account.city.state}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="body1">
-                      <strong>Sexo:</strong> {account.sex_id === 1 ? 'Masculino' : 'Femenino'}
+                      <strong>Sexo:</strong> {account.sex}
                     </Typography>
                   </Grid>
                 </Grid>

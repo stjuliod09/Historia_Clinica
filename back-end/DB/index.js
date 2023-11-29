@@ -27,12 +27,10 @@ const city = sequelize.define(
       allowNull: true
     },
     name: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING
     },
     state: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING
     }
   },
   {
@@ -50,22 +48,19 @@ const patient = sequelize.define(
       autoIncrement: true
     },
     first_name: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING
     },
     second_name: {
       type: DataTypes.STRING
     },
     first_last_name: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING
     },
     second_last_name: {
       type: DataTypes.STRING
     },
     dob: {
       type: DataTypes.DATE,
-      allowNull: false,
       defaultValue: new Date('2000-01-01')
     },
     sex: {

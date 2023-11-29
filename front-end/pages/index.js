@@ -82,13 +82,16 @@ const CustomizedTables = () => {
     const tipoFiltro = event.target.value;
     setFiltro(tipoFiltro);
 
-    // Filtrar los datos según el tipo de filtro y el texto de filtro
     if (tipoFiltro === 1) {
-      // Filtrar por ID
-      setFilteredData(dataFinal.filter((row) => row.id !== 'null' && row.id.toLowerCase().includes(textoFiltro.toLowerCase())));
+      // Filtrar por Sexo
+      setFilteredData(
+        dataFinal.filter((row) => row.sex !== 'null' && row.sex !== null && row.sex.toLowerCase() === textoFiltro.toLowerCase())
+      );
     } else if (tipoFiltro === 2) {
-      // Filtrar por Nombre
-      setFilteredData(dataFinal.filter((row) => row.nombre !== 'null' && row.nombre.toLowerCase().includes(textoFiltro.toLowerCase())));
+      // Filtrar por Etnia
+      setFilteredData(
+        dataFinal.filter((row) => row.etnia !== 'null' && row.etnia !== null && row.etnia.toLowerCase() === textoFiltro.toLowerCase())
+      );
     } else {
       // Si no hay filtro seleccionado, mostrar todos los datos
       setFilteredData(dataFinal);
@@ -99,23 +102,22 @@ const CustomizedTables = () => {
     const texto = event.target.value;
     setTextoFiltro(texto);
 
-    // Filtrar los datos según el tipo de filtro y el texto de filtro
     if (filtro === 1) {
-      // Filtrar por ID
-      setFilteredData(dataFinal.filter((row) => row.id !== 'null' && row.id.toLowerCase().includes(texto.toLowerCase())));
+      // Filtrar por Sexo
+      setFilteredData(dataFinal.filter((row) => row.sex !== '' && row.sex !== null && row.sex.toLowerCase() === texto.toLowerCase()));
     } else if (filtro === 2) {
-      // Filtrar por Nombre
-      setFilteredData(dataFinal.filter((row) => row.nombre !== 'null' && row.nombre.toLowerCase().includes(texto.toLowerCase())));
+      // Filtrar por Etnia
+      setFilteredData(dataFinal.filter((row) => row.etnia !== '' && row.etnia !== null && row.etnia.toLowerCase() === texto.toLowerCase()));
     } else {
       // Si no hay filtro seleccionado, mostrar todos los datos
       setFilteredData(dataFinal);
     }
   };
-
   const getData = (id) => {
     UserService.getUserById(id).then((resp) => {
       if (resp.user !== undefined || resp.user !== null) {
-        setAccount(resp.user);
+        console.log(resp);
+        setAccount(resp.newUser);
       }
 
       return resp.data;
@@ -160,8 +162,8 @@ const CustomizedTables = () => {
                     onChange={handleFiltroChange}
                     sx={{ fontSize: 14 }}
                   >
-                    <MenuItem value={1}>Id</MenuItem>
-                    <MenuItem value={2}>Nombre</MenuItem>
+                    <MenuItem value={1}>Sexo</MenuItem>
+                    <MenuItem value={2}>Etnia</MenuItem>
                   </Select>
                 </FormControl>
               </Box>

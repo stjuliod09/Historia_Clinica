@@ -15,9 +15,12 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
+import UserService from '@/services/userSevices';
+import { useRouter } from 'next/router';
 
 export default function NewPacient() {
   const [solicitud, setSolicitud] = useState('');
+  const router = useRouter();
   const [pacienteData, setPacienteData] = useState({
     first_name: '',
     second_name: '',
@@ -26,8 +29,9 @@ export default function NewPacient() {
     id: '',
     address: '',
     etnia: '',
-    user: '',
+    user_id: '',
     dob: '',
+    is_active: 1,
     city_of_birth: {
       name: '',
       state: ''
@@ -36,7 +40,7 @@ export default function NewPacient() {
   });
 
   const [contacto, setContacto] = useState({
-    person_id: '',
+    patient_id: '',
     contact_type_id: '',
     contact: '',
     contact_name: '',
@@ -66,7 +70,7 @@ export default function NewPacient() {
 
   const handleIdChange = (event) => {
     setPacienteData({ ...pacienteData, id: event.target.value });
-    setContacto({ ...contacto, person_id: event.target.value });
+    setContacto({ ...contacto, patient_id: event.target.value });
   };
 
   const handleAddressChange = (event) => {
@@ -78,7 +82,7 @@ export default function NewPacient() {
   };
 
   const handleUserChange = (event) => {
-    setPacienteData({ ...pacienteData, user: event.target.value });
+    setPacienteData({ ...pacienteData, user_id: event.target.value });
   };
 
   const handleDobChange = (event) => {
@@ -122,20 +126,29 @@ export default function NewPacient() {
   };
 
   const handleParentescoChange = (event) => {
-    setContacto({ ...contacto, contact_name: event.target.value });
+    setContacto({ ...contacto, parentesco: event.target.value });
   };
 
-  const crearPaciente = (body) => {
+  const crearPaciente = async (body) => {
     console.log(body);
     UserService.create(body).then((resp) => {
-      console.log(resp.data);
+      crearContacto(contacto);
+      return resp.data;
+    });
+  };
+
+  const crearContacto = async (body) => {
+    console.log(body);
+    UserService.contactCreate(body).then((resp) => {
+      if (resp.status === 200) {
+        router.push('/');
+      }
       return resp.data;
     });
   };
 
   async function consumir() {
-    console.log(pacienteData);
-    console.log(contacto);
+    await crearPaciente(pacienteData);
   }
 
   return (
@@ -254,7 +267,7 @@ export default function NewPacient() {
                 required
                 id="fecha de nacimiento"
                 name="fecha de nacimiento"
-                label="fecha de nacimiento (dd-mm-yy)"
+                label="fecha de nacimiento (yy-mm-dd)"
                 fullWidth
                 variant="standard"
                 onChange={handleDobChange}

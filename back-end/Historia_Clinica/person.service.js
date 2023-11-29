@@ -1,65 +1,64 @@
 const { patient, city, previous_history, contact, user } = require('../DB/index');
 
 async function create(req) {
-  try {
-    const existingPerson = await patient.findOne({
+  // try {
+  const existingPerson = await patient.findOne({
+    where: {
+      id: req.id
+    }
+  });
+
+  if (existingPerson) {
+    return { status: 201, mensaje: 'The patient is already created' };
+  }
+
+  let existingCity;
+
+  // Verificar y crear la ciudad según la existencia del ID o el nombre
+  if (req.city_of_birth && !req.city_of_birth.id) {
+    const [newCity, createdCity] = await city.findOrCreate({
       where: {
-        id: req.id
+        name: req.city_of_birth.name,
+        state: req.city_of_birth.state
       }
     });
-
-    if (existingPerson) {
-      return { status: 201, mensaje: 'The patient is already created' };
-    }
-
-    let existingCity;
-
-    // Verificar y crear la ciudad según la existencia del ID o el nombre
-    if (req.city_of_birth && !req.city_of_birth.id) {
-      const [newCity, createdCity] = await city.findOrCreate({
-        where: {
-          name: req.city_of_birth.name,
-          code: req.city_of_birth.code,
-          state: req.city_of_birth.state
-        }
-      });
-      existingCity = newCity;
-    } else if (req.city_of_birth && req.city_of_birth.id) {
-      existingCity = await city.findByPk(req.city_of_birth.id);
-    }
-
-    // Crea la nueva persona sin referencia a la ciudad si no se proporciona
-    const personData = {
-      ...req,
-      ...(req.city_of_birth && { city_of_birth: existingCity.id })
-    };
-
-    const newPerson = await patient.create(personData);
-
-    return { status: 200, mensaje: 'The patient or patient has been created', data: newPerson };
-  } catch (error) {
-    return { status: 500, mensaje: 'Error creating patient', error };
+    existingCity = newCity;
+  } else if (req.city_of_birth && req.city_of_birth.id) {
+    existingCity = await city.findByPk(req.city_of_birth.id);
   }
+
+  // Crea la nueva persona sin referencia a la ciudad si no se proporciona
+  const personData = {
+    ...req,
+    ...(req.city_of_birth && { city_of_birth: existingCity.id })
+  };
+
+  const newPerson = await patient.create(personData);
+
+  return { status: 200, mensaje: 'The patient or patient has been created', data: newPerson };
+  // } catch (error) {
+  //   return { status: 500, mensaje: 'Error creating patient', error };
+  // }
 }
 
 async function getAll() {
-  try {
-    const allPersons = await person.findAll({
-      include: [
-        {
-          model: city
-        }
-      ]
-    });
+  // try {
+  const allPersons = await patient.findAll({
+    include: [
+      {
+        model: city
+      }
+    ]
+  });
 
-    if (!allPersons || allPersons.length === 0) {
-      return { status: 404, mensaje: 'No persons found' };
-    }
-
-    return { status: 200, mensaje: 'Persons retrieved successfully', data: allPersons };
-  } catch (error) {
-    return { status: 500, mensaje: 'Error fetching persons', error: error.message };
+  if (!allPersons || allPersons.length === 0) {
+    return { status: 404, mensaje: 'No persons found' };
   }
+
+  return { status: 200, mensaje: 'Persons retrieved successfully', data: allPersons };
+  // } catch (error) {
+  //   return { status: 500, mensaje: 'Error fetching persons', error: error.message };
+  // }
 }
 
 async function update(body, params) {
@@ -97,7 +96,7 @@ async function update(body, params) {
 
 async function getId(id) {
   try {
-    const foundPerson = await person.findByPk(id, {
+    const foundPerson = await patient.findByPk(id, {
       include: [
         {
           model: city
@@ -148,11 +147,10 @@ async function createUser(req) {
 
 async function getUserById(userId) {
   try {
-    console.log(userId);
-    const user = await users.findOne({ where: { id: userId.id } });
+    const newUser = await user.findOne({ where: { id: userId.id } });
 
-    if (user) {
-      return { status: 200, mensaje: 'User found', user };
+    if (newUser) {
+      return { status: 200, mensaje: 'User found', newUser };
     } else {
       return { status: 404, mensaje: 'User not found' };
     }
