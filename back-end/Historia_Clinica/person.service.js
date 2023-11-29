@@ -1,45 +1,18 @@
-const {
-  person,
-  city,
-  state,
-  patient,
-  previous_history,
-  previous_history_follow_up,
-  antecedent_type,
-  address,
-  contact,
-  person_identifier,
-  identifier_type,
-  users
-} = require('../DB/index');
+const { patient, city, previous_history, contact, user } = require('../DB/index');
 
 async function create(req) {
   try {
-    const existingPerson = await person.findOne({
+    const existingPerson = await patient.findOne({
       where: {
         id: req.id
       }
     });
 
     if (existingPerson) {
-      return { status: 201, mensaje: 'The person is already created' };
+      return { status: 201, mensaje: 'The patient is already created' };
     }
 
-    let existingState, existingCity;
-
-    // Verificar y crear el estado si no se proporciona el ID
-    if (req.city_of_birth && !req.city_of_birth.state.id) {
-      const [newState, createdState] = await state.findOrCreate({
-        where: {
-          name: req.city_of_birth.state.name,
-          code: req.city_of_birth.state.code,
-          country_id: req.city_of_birth.state.country_id
-        }
-      });
-      existingState = newState;
-    } else if (req.city_of_birth && req.city_of_birth.state.id) {
-      existingState = await state.findByPk(req.city_of_birth.state.id);
-    }
+    let existingCity;
 
     // Verificar y crear la ciudad según la existencia del ID o el nombre
     if (req.city_of_birth && !req.city_of_birth.id) {
@@ -47,7 +20,7 @@ async function create(req) {
         where: {
           name: req.city_of_birth.name,
           code: req.city_of_birth.code,
-          state_id: existingState.id
+          state: req.city_of_birth.state
         }
       });
       existingCity = newCity;
@@ -58,20 +31,14 @@ async function create(req) {
     // Crea la nueva persona sin referencia a la ciudad si no se proporciona
     const personData = {
       ...req,
-      ...(req.city_of_birth && { city_of_birth: existingCity.id }),
-      ...(req.city_of_birth && { state_id: existingState.id })
+      ...(req.city_of_birth && { city_of_birth: existingCity.id })
     };
 
-    const newPerson = await person.create(personData);
+    const newPerson = await patient.create(personData);
 
-    const newPatient = await patient.create({
-      person_id: newPerson.id,
-      is_active: 1
-    });
-
-    return { status: 200, mensaje: 'The person or patient has been created', person: newPerson };
+    return { status: 200, mensaje: 'The patient or patient has been created', data: newPerson };
   } catch (error) {
-    return { status: 500, mensaje: 'Error creating person', error };
+    return { status: 500, mensaje: 'Error creating patient', error };
   }
 }
 
@@ -80,10 +47,7 @@ async function getAll() {
     const allPersons = await person.findAll({
       include: [
         {
-          model: city,
-          include: {
-            model: state
-          }
+          model: city
         }
       ]
     });
@@ -104,7 +68,7 @@ async function update(body, params) {
       where: {
         id: params.id
       },
-      include: [{ model: city, include: state }] // Incluye city y, a su vez, incluye state
+      include: [{ model: city }]
     });
 
     if (!personToUpdate) {
@@ -136,10 +100,7 @@ async function getId(id) {
     const foundPerson = await person.findByPk(id, {
       include: [
         {
-          model: city,
-          include: {
-            model: state
-          }
+          model: city
         }
       ]
     });
@@ -155,8 +116,6 @@ async function getId(id) {
 }
 
 async function createPreviousHistory(req) {
-  const { patient_id, personal, relative, approximated_date_of_occurrence, value } = req;
-
   try {
     const newPreviousHistory = await previous_history.findOne({
       where: {
@@ -168,37 +127,8 @@ async function createPreviousHistory(req) {
       return { status: 201, mensaje: 'The previous_history is already created' };
     }
 
-    // En este punto, necesitas buscar o crear el antecedent_type según su nombre y código
-    let AntecedentType = await antecedent_type.findOrCreate({
-      where: {
-        name: req.antecedent_type.name,
-        code: req.antecedent_type.code
-      }
-    });
-
-    // Obtiene el ID del antecedent_type encontrado o creado
-    const antecedent_type_id = AntecedentType[0].id;
-
     // Crea el registro en previous_history
-    const newPreviousHistoryRecord = await previous_history.create(
-      {
-        patient_id,
-        personal,
-        relative,
-        antecedent_type: antecedent_type_id,
-        approximated_date_of_occurrence,
-        value
-      },
-      {
-        include: [
-          {
-            model: antecedent_type,
-            as: 'AntecedentTypeInfo',
-            attributes: ['id', 'name', 'code']
-          }
-        ]
-      }
-    );
+    const newPreviousHistoryRecord = await previous_history.create(req);
 
     return { status: 200, mensaje: 'The previous_history has been created', data: newPreviousHistoryRecord };
   } catch (error) {
@@ -206,44 +136,14 @@ async function createPreviousHistory(req) {
   }
 }
 
-async function createAddress(req) {
-  console.log(req);
-  const newAddress = await address.create(req);
-  return { status: 200, mensaje: 'The address has been created', newAddress };
-}
-
 async function createContact(req) {
   const newContact = await contact.create(req);
   return { status: 200, mensaje: 'The contact has been created', newContact };
 }
 
-async function createPersonIdentifier(req) {
-  const identifierID = await identifier_type.findOne({ where: { id: req.identifier_type_id.id } });
-
-  if (!identifierID) {
-    createIdType(req.identifier_type_id);
-  }
-  const newIdentifier = await person_identifier.create({
-    person_id: req.person_id,
-    identifier_type_id: req.identifier_type_id.id,
-    value: req.value
-  });
-  return { status: 200, mensaje: 'The person identifier has been created', newIdentifier };
-}
-
-async function createIdType(req) {
-  const newIdentifier = await identifier_type.create(req);
-  return { status: 200, mensaje: 'The identifier type has been created', newIdentifier };
-}
-
 async function createUser(req) {
-  const newUser = await users.create(req);
+  const newUser = await user.create(req);
   return { status: 200, mensaje: 'The user has been created', newUser };
-}
-
-async function createPreviousHFU(req) {
-  const newPrevHUF = await previous_history_follow_up.create(req);
-  return { status: 200, mensaje: 'The previous history follow up has been created', newPrevHUF };
 }
 
 async function getUserById(userId) {
@@ -268,10 +168,7 @@ module.exports = {
   getId,
   update,
   createPreviousHistory,
-  createAddress,
   createContact,
-  createPersonIdentifier,
   createUser,
-  createPreviousHFU,
   getUserById
 };

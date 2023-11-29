@@ -26,27 +26,13 @@ async function createPreviousHistory(req, res, next) {
   return res.status(respuesta.status).json(respuesta);
 }
 
-async function createAddress(req, res, next) {
-  const respuesta = await personService.createAddress(req.body);
-  return res.status(respuesta.status).json(respuesta);
-}
-
 async function createContact(req, res, next) {
   const respuesta = await personService.createContact(req.body);
   return res.status(respuesta.status).json(respuesta);
 }
 
-async function createPersonIdentifier(req, res, next) {
-  const respuesta = await personService.createPersonIdentifier(req.body);
-  return res.status(respuesta.status).json(respuesta);
-}
-
 async function createUser(req, res, next) {
   const respuesta = await personService.createUser(req.body);
-  return res.status(respuesta.status).json(respuesta);
-}
-async function createPreviousHFU(req, res, next) {
-  const respuesta = await personService.createPreviousHFU(req.body);
   return res.status(respuesta.status).json(respuesta);
 }
 
@@ -61,10 +47,7 @@ module.exports = {
   getAll,
   getId,
   createPreviousHistory,
-  createAddress,
   createContact,
-  createPersonIdentifier,
   createUser,
-  createPreviousHFU,
   getUserById
 };

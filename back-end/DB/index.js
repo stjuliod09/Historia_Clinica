@@ -11,6 +11,7 @@ sequelize
   .authenticate()
   .then(() => {
     console.log('Conexión establecida correctamente.');
+    return sequelize.sync({ alter: true }); // Esta línea realiza la sincronización
   })
   .catch((err) => {
     console.error('No se pudo conectar a la base de datos:', err);
@@ -29,80 +30,14 @@ const city = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    code: {
-      type: DataTypes.STRING
-    },
-    state_id: {
-      type: DataTypes.INTEGER,
+    state: {
+      type: DataTypes.STRING,
       allowNull: false
     }
   },
   {
     tableName: 'city',
     timestamps: false
-  }
-);
-
-const state = sequelize.define(
-  'state',
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    code: {
-      type: DataTypes.STRING
-    },
-    country_id: {
-      type: DataTypes.INTEGER
-    }
-  },
-  {
-    tableName: 'state',
-    timestamps: false
-  }
-);
-
-const person = sequelize.define(
-  'person',
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    first_name: {
-      type: DataTypes.STRING
-    },
-    second_name: {
-      type: DataTypes.STRING
-    },
-    first_last_name: {
-      type: DataTypes.STRING
-    },
-    second_last_name: {
-      type: DataTypes.STRING
-    },
-    dob: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    sex_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    city_of_birth: {
-      type: DataTypes.INTEGER
-    }
-  },
-  {
-    tableName: 'person',
-    underscored: true
   }
 );
 
@@ -114,14 +49,45 @@ const patient = sequelize.define(
       primaryKey: true,
       autoIncrement: true
     },
-    person_id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
+    first_name: {
+      type: DataTypes.STRING,
       allowNull: false
+    },
+    second_name: {
+      type: DataTypes.STRING
+    },
+    first_last_name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    second_last_name: {
+      type: DataTypes.STRING
+    },
+    dob: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: new Date('2000-01-01')
+    },
+    sex: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    city_of_birth: {
+      type: DataTypes.INTEGER
+    },
+    address: {
+      type: DataTypes.STRING
     },
     is_active: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    etnia: {
+      type: DataTypes.STRING
     }
   },
   {
@@ -149,58 +115,12 @@ const previous_history = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    antecedent_type: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     approximated_date_of_occurrence: {
       type: DataTypes.DATE,
       allowNull: false
     },
     value: {
       type: DataTypes.STRING,
-      allowNull: false
-    }
-  },
-  {
-    tableName: 'previous_history',
-    underscored: true
-  }
-);
-
-const antecedent_type = sequelize.define(
-  'antecedent_type',
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    code: {
-      type: DataTypes.STRING,
-      allowNull: false
-    }
-  },
-  {
-    tableName: 'antecedent_type',
-    timestamps: false
-  }
-);
-
-const previous_history_follow_up = sequelize.define(
-  'previous_history_follow_up',
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    previous_history_id: {
-      type: DataTypes.INTEGER,
       allowNull: false
     },
     status_id: {
@@ -210,67 +130,14 @@ const previous_history_follow_up = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    created_by: {
-      type: DataTypes.INTEGER,
-      defaultValue: 1
-    }
-  },
-  {
-    tableName: 'previous_history_follow_up',
-    underscored: true // Mueve underscored aquí, dentro del mismo objeto
-  }
-);
-
-const person_identifier = sequelize.define(
-  'person_identifier',
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    person_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    identifier_type_id: {
-      type: DataTypes.INTEGER
-    },
-    value: {
+    antecedent_type_id: {
       type: DataTypes.STRING,
       allowNull: false
-    },
-    created_by: {
-      type: DataTypes.INTEGER,
-      defaultValue: 1
     }
   },
   {
-    tableName: 'person_identifier',
+    tableName: 'previous_history',
     underscored: true
-  }
-);
-
-const identifier_type = sequelize.define(
-  'identifier_type',
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    code: {
-      type: DataTypes.STRING,
-      allowNull: false
-    }
-  },
-  {
-    tableName: 'identifier_type',
-    timestamps: false
   }
 );
 
@@ -282,12 +149,12 @@ const contact = sequelize.define(
       primaryKey: true,
       autoIncrement: true
     },
-    person_id: {
+    patient_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    contact_type_id: {
-      type: DataTypes.INTEGER
+    parentesco: {
+      type: DataTypes.STRING
     },
     contact: {
       type: DataTypes.STRING,
@@ -300,10 +167,6 @@ const contact = sequelize.define(
     obs: {
       type: DataTypes.STRING,
       allowNull: false
-    },
-    created_by: {
-      type: DataTypes.INTEGER,
-      defaultValue: 1
     }
   },
   {
@@ -312,35 +175,8 @@ const contact = sequelize.define(
   }
 );
 
-const address = sequelize.define(
-  'address',
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    person_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    value: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    city_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    }
-  },
-  {
-    tableName: 'address',
-    underscored: true // Mueve underscored aquí, dentro del mismo objeto
-  }
-);
-
-const users = sequelize.define(
-  'users',
+const user = sequelize.define(
+  'user',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -361,37 +197,21 @@ const users = sequelize.define(
     }
   },
   {
-    tableName: 'users',
+    tableName: 'user',
     timestamps: false
   }
 );
 
 // ---------------- RELACIONES ENTRE TABLAS ----------------
 
-person.belongsTo(city, {
+patient.belongsTo(city, {
   foreignKey: 'city_of_birth', // Esta es la clave externa en la tabla Person
   targetKey: 'id' // La clave a la que se hace referencia en la tabla City
 });
 
-city.hasMany(person, {
+city.hasMany(patient, {
   foreignKey: 'city_of_birth',
   sourceKey: 'id'
-});
-
-state.hasMany(city, {
-  foreignKey: 'state_id'
-});
-
-city.belongsTo(state, {
-  foreignKey: 'state_id'
-});
-
-patient.belongsTo(person, {
-  foreignKey: 'person_id'
-});
-
-person.hasOne(patient, {
-  foreignKey: 'person_id'
 });
 
 previous_history.belongsTo(patient, {
@@ -403,76 +223,22 @@ patient.hasOne(previous_history, {
   foreignKey: 'patient_id' // Esta es la columna de `previous_history`
 });
 
-previous_history.belongsTo(antecedent_type, {
-  foreignKey: 'antecedent_type',
-  as: 'AntecedentTypeInfo'
+contact.belongsTo(patient, {
+  foreignKey: 'patient_id'
 });
 
-antecedent_type.hasOne(previous_history, {
-  foreignKey: 'antecedent_type'
+patient.hasOne(contact, {
+  foreignKey: 'patient_id'
 });
 
-previous_history_follow_up.belongsTo(previous_history, {
-  foreignKey: 'previous_history_id'
-});
-
-previous_history.hasOne(previous_history_follow_up, {
-  foreignKey: 'previous_history_id'
-});
-
-address.belongsTo(person, {
-  foreignKey: 'person_id',
-  targetKey: 'id'
-});
-
-person.hasOne(address, {
-  foreignKey: 'person_id',
-  sourceKey: 'id'
-});
-
-address.belongsTo(city, {
-  foreignKey: 'city_id'
-});
-
-city.hasOne(address, {
-  foreignKey: 'city_id'
-});
-
-contact.belongsTo(person, {
-  foreignKey: 'person_id'
-});
-
-person.hasOne(contact, {
-  foreignKey: 'person_id'
-});
-
-person_identifier.belongsTo(person, {
-  foreignKey: 'person_id'
-});
-
-person.hasOne(person_identifier, {
-  foreignKey: 'person_id'
-});
-
-person_identifier.belongsTo(identifier_type, {
-  foreignKey: 'identifier_type_id'
-});
-
-identifier_type.hasOne(person_identifier, {
-  foreignKey: 'identifier_type_id'
+patient.belongsTo(user, {
+  foreignKey: 'id'
 });
 
 module.exports = {
-  person,
   city,
-  state,
   patient,
   previous_history,
-  antecedent_type,
-  previous_history_follow_up,
-  person_identifier,
-  identifier_type,
   contact,
-  address,
-  users
+  user
 };
